@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"environment": {
+			"type": "string"
+		},
+        "webName": {
+            "type": "string"
+        }
+    },
+    "functions": [],
+    "variables": {
+		"resourceTags": {
+			"Environment": "[parameters('environment')]",
+			"Owner": "Alex AE"
+		}
+	},
+    "resources": [{
+        "name": "appServicePlanFree",
+        "type": "Microsoft.Web/serverfarms",
+        "apiVersion": "2018-02-01",
+        "location": "[resourceGroup().location]",
+        "sku": {
+            "name": "F1",
+            "capacity": 1
+        },
+        "tags": "[variables('resourceTags')]",
+        "properties": {
+            "name": "appServicePlanFree"
+        }
+    },
+    {
+        "name": "[parameters('webName')]",
+        "type": "Microsoft.Web/sites",
+        "apiVersion": "2018-11-01",
+        "location": "[resourceGroup().location]",
+        "tags": "[variables('resourceTags')]",
+        "dependsOn": [
+            "[resourceId('Microsoft.Web/serverfarms', 'appServicePlanFree')]"
+        ],
+        "properties": {
+            "name": "[parameters('webName')]",
+            "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', 'appServicePlanFree')]"
+        }
+    }],
+    "outputs": {}
+}
